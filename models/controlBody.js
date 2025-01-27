@@ -8,69 +8,70 @@ module.exports = (sequelize) => {
         },
         id_Body: {
             type: DataTypes.STRING,
+            references: {
+                model: 'bodyCam',
+                key: 'id',
+            },
             allowNull: false
         },
         id_dni: {
-            type: DataTypes.DATEONLY,
+            type: DataTypes.STRING,
+            references: {
+                model: 'Personas',
+                key: 'id',
+            },
             allowNull: false
         },
         id_turno: {
             type: DataTypes.STRING,
+            references: {
+                model: 'horarios',
+                key: 'id',
+            },       
             allowNull: false
         },      
         id_jurisdiccion: {
             type: DataTypes.UUID,
-            allowNull: true,
+            references: {
+                model: 'Jurisdiccions',
+                key: 'id',
+            },         
+            allowNull: false
         },
         fecha_entrega:{
-            type: DataTypes.UUID,
-            references: {
-                model: 'DescargoIFIs',
-                key: 'id',
-            },
+            type: DataTypes.DATEONLY,
             allowNull: true,
-            unique:true
         },
         hora_entrega:{
+            type: DataTypes.TIME,
+            allowNull: true,
 
         },
         fecha_devolucion:{
-            type: DataTypes.UUID,
-            references: {
-                model: 'DescargoIFIs',
-                key: 'id',
-            },
+            type: DataTypes.DATEONLY,
             allowNull: true,
-            unique:true
         },
         hora_devolucion:{
-
-        },
-        id_nc:{
-            type: DataTypes.UUID,
-            references: {
-                model: 'NCs',
-                key: 'id',
-            },
+            type: DataTypes.TIME,
             allowNull: true,
-           
         },
-        // id_estado_IFI:{
-        //     type: DataTypes.INTEGER,
-        //     references: {
-        //         model: 'EstadoIFIs',
-        //         key: 'id',
-        //     },
-        //     allowNull:false
-        // },
+        
         status:{
-            type: DataTypes.UUID,
+            type: DataTypes.ENUM('EN CAMPO','EN CECOM'),
             references: {
                 model: 'Usuarios',
                 key: 'id',
             },
             allowNull: false
-        }
+        },
+        // usuario:{
+        //     type:DataTypes.UUID,
+        //     references: {
+        //         model: 'Usuarios',
+        //         key: 'id',
+        //     },
+        //     allowNull: false
+        // }
     }, {
         tableName: 'controlBodys',
         timestamps: true
