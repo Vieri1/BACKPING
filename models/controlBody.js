@@ -7,23 +7,24 @@ module.exports = (sequelize) => {
             defaultValue: DataTypes.UUIDV4,
         },
         id_Body: {
-            type: DataTypes.STRING,
+            type: DataTypes.UUID,
             references: {
-                model: 'bodyCam',
+                model: 'bodyCams',
                 key: 'id',
             },
             allowNull: false
         },
         id_dni: {
-            type: DataTypes.STRING,
+            type: DataTypes.UUID,
             references: {
                 model: 'Personas',
                 key: 'id',
             },
+            unique:true,
             allowNull: false
         },
         id_turno: {
-            type: DataTypes.STRING,
+            type: DataTypes.UUID,
             references: {
                 model: 'horarios',
                 key: 'id',
@@ -38,6 +39,15 @@ module.exports = (sequelize) => {
             },         
             allowNull: false
         },
+        id_unidad: {
+            type: DataTypes.UUID,
+            references: {
+                model: 'Unidads',
+                key: 'id',
+            },         
+            allowNull: false
+        },
+        
         fecha_entrega:{
             type: DataTypes.DATEONLY,
             allowNull: true,
@@ -58,37 +68,19 @@ module.exports = (sequelize) => {
         
         status:{
             type: DataTypes.ENUM('EN CAMPO','EN CECOM'),
-            references: {
-                model: 'Usuarios',
-                key: 'id',
-            },
             allowNull: false
         },
-        // usuario:{
-        //     type:DataTypes.UUID,
-        //     references: {
-        //         model: 'Usuarios',
-        //         key: 'id',
-        //     },
-        //     allowNull: false
-        // }
     }, {
         tableName: 'controlBodys',
         timestamps: true
     });
-    // controlBody.associate = (db) => {
-    //     // Relación de 1 a 1 entre controlBody y los tipos basados en 'tipo'
-    //     controlBody.belongsTo(db.RSA, { foreignKey: 'id_evaluar', as: 'RSA', constraints: false });
-    //     controlBody.belongsTo(db.RSG1, { foreignKey: 'id_evaluar', as: 'RSG1', constraints: false });
-    //     controlBody.belongsTo(db.RSG2, { foreignKey: 'id_evaluar', as: 'RSG2', constraints: false });
-    //     // Relación con DescargoIFI
-    //     controlBody.belongsTo(db.DescargoIFI, { foreignKey: 'id_descargo_ifi', as: 'DescargoIFIs' });
-    //     controlBody.belongsTo(db.NC,{foreignKey:'id_nc',as:'NCs'});
-    //     // controlBody.belongsTo(db.EstadoIFI, { foreignKey: 'id_estado_IFI', as: 'estadoIFI'});
-    //     controlBody.belongsTo(db.Usuario,{foreignKey:'id_AI1' , as:'Usuarios' });
-
-   
-    // };
+     controlBody.associate = (db) => {  
+        controlBody.belongsTo(db.bodyCam, { foreignKey: 'id_Body', as: 'bodyCams' });
+        controlBody.belongsTo(db.Persona, { foreignKey: 'id_dni', as: 'Personas' });
+        controlBody.belongsTo(db.Unidad, { foreignKey: 'id_unidad', as: 'Unidads' });
+        controlBody.belongsTo(db.horario, { foreignKey: 'id_turno', as: 'horarios' });
+        controlBody.belongsTo(db.Jurisdiccion,{foreignKey:'id_jurisdiccion',as:'Jurisdiccions'});
+    };
 
 
     return controlBody;
