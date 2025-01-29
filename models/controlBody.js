@@ -58,10 +58,7 @@ module.exports = (sequelize) => {
         
         status:{
             type: DataTypes.ENUM('EN CAMPO','EN CECOM'),
-            references: {
-                model: 'Usuarios',
-                key: 'id',
-            },
+           
             allowNull: false
         },
         // usuario:{
@@ -77,14 +74,14 @@ module.exports = (sequelize) => {
         timestamps: true
     });
     // controlBody.associate = (db) => {
-    //     // Relación de 1 a 1 entre controlBody y los tipos basados en 'tipo'
+         // Relación de 1 a 1 entre controlBody y los tipos basados en 'tipo'
     //     controlBody.belongsTo(db.RSA, { foreignKey: 'id_evaluar', as: 'RSA', constraints: false });
     //     controlBody.belongsTo(db.RSG1, { foreignKey: 'id_evaluar', as: 'RSG1', constraints: false });
     //     controlBody.belongsTo(db.RSG2, { foreignKey: 'id_evaluar', as: 'RSG2', constraints: false });
     //     // Relación con DescargoIFI
     //     controlBody.belongsTo(db.DescargoIFI, { foreignKey: 'id_descargo_ifi', as: 'DescargoIFIs' });
     //     controlBody.belongsTo(db.NC,{foreignKey:'id_nc',as:'NCs'});
-    //     // controlBody.belongsTo(db.EstadoIFI, { foreignKey: 'id_estado_IFI', as: 'estadoIFI'});
+         // controlBody.belongsTo(db.EstadoIFI, { foreignKey: 'id_estado_IFI', as: 'estadoIFI'});
     //     controlBody.belongsTo(db.Usuario,{foreignKey:'id_AI1' , as:'Usuarios' });
 
    
