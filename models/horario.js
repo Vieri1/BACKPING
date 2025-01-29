@@ -6,14 +6,11 @@ module.exports=(sequelize)=>{
             primaryKey: true,
             defaultValue: DataTypes.UUIDV4,
         },
-        modelo:{
+        turno:{
             type: DataTypes.STRING,
             allowNull: true
-        },
-        marca:{
-            type: DataTypes.STRING,
-            allowNull:true
         }
+      
     }, {
         tableName: 'horarios',
         timestamps: true
