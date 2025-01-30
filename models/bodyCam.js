@@ -25,6 +25,10 @@ module.exports=(sequelize)=>{
         id_proveedor:{
             type:DataTypes.INTEGER,
             allowNull:true
+        },
+        state:{
+            type:DataTypes.BOOLEAN,
+            allowNull:true
         }
 
     }, {
