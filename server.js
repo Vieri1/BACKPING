@@ -1,6 +1,5 @@
 require("dotenv").config();
 const express = require("express");
-const bodyParser = require('body-parser');
 const http = require("http");
 // const path = require('path');
 const { sequelize } = require("./db_connection");
@@ -8,10 +7,10 @@ const { sequelize } = require("./db_connection");
 // const { PDF_RUTA } = process.env;
 //const tareajeRutas = require("./routes/index");
 const { PORT_CAMARAS } = process.env;
-//const { initializeSocket, userSockets } = require("./sockets");
+const { initializeSocket, userSockets } = require("./sockets");
 //const loginMiddleware = require("./checkers/validateToken");
 //const usuariosRouter = require("./routes/loginRouter");
-//const cors = require("cors");
+const cors = require("cors");
 //const configurarCronJobs = require("./cronjobs/cron");
 
 const app = express();
@@ -43,4 +42,4 @@ server.listen(PORT_CAMARAS, () => {
     .catch(err => console.error("Error connecting to the database:", err));
 });
 
-//module.exports = { userSockets };
+module.exports = { userSockets };
