@@ -1,9 +1,69 @@
 const { getIo } = require('../sockets');
-const { newbody, updatebodyCam } = require("../controllers/bodyCamController");
+const { newbody, updatebodyCam, getAllbodycams, deletebodyCam, getbodycam } = require("../controllers/bodyCamController");
 
 const socketHandlers = (socket) => {
-   // console.log(`Cliente conectado: ${socket.id}`);
+    socket.on("getBody", async (data, callback) => {
+        const { id } = data
 
+        try {
+            const response = await getbodycam(id);
+            if (!response)
+
+                return callback({ status: 500, message: "Error al traer la Bodycam" })
+
+            const io = getIo();
+
+            io.emit("getbody", { message: "Se hiso la operacion correctamente la body", data: response })
+
+            callback({ status: 200, message: "Se hiso la operacion correctamente la body" })
+
+        } catch (error) {
+
+            console.error("Eror en el controlador", error)
+            
+            callback({ status: 500, message: "Error al eliminar la body" })
+        }
+    })
+    socket.on("deleteBody", async (data, callback) => {
+        const { id } = data;
+        try {
+            const response = await deletebodyCam(id);
+
+            if (!response) {
+                return callback({ status: 500, message: "Error al modificar la BodyCam." });
+            }
+            const io = getIo();
+            io.emit("changeStateBody", { message: "Se elimino correctamente la body(state)", data: response })
+
+            callback({ status: 200, message: "Se elimino correctamente la body(state)" })
+
+        } catch (error) {
+            console.error("Eror en el controlador", error)
+            callback({ status: 500, message: "Error al eliminar la body" })
+        }
+
+    })
+    // console.log(`Cliente conectado: ${socket.id}`);
+    socket.on("getAllBodys", async (data, callback) => {
+        const { page = 1, limit = 20 } = data;
+
+        if (isNaN(page) || page <= 0 || isNaN(limit) || limit <= 0) {
+            return callback({ status: 400, message: "Page y limit deben ser números válidos" });
+        }
+
+        try {
+            const response = await getAllbodycams(Number(page), Number(limit));
+
+            const io = getIo();
+            io.emit("listaallbodys", { message: 'Bodycams obtenidos correctamente', data: response });
+
+            callback({ status: 200, message: "Bodycams obtenidos correctamente", data: response });
+        } catch (error) {
+            console.error("Error al obtener NCs:", error);
+            callback({ status: 500, message: "Error interno del servidor" });
+        }
+
+    })
     // Evento para actualizar BodyCam
     socket.on('updateBody', async (data, callback) => {
         const { id, numero, serie, nro_bateria, id_proveedor } = data;

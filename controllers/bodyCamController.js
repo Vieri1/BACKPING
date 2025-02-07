@@ -11,7 +11,7 @@ const newbody=async ({numero,serie,nro_bateria,id_proveedor}) => {
     return false;
     }
 };
-const getbodycams=async (page = 1, limit = 20) => {
+const getAllbodycams=async (page = 1, limit = 20) => {
     const offset = (page - 1) * limit;
     try {
         const response=await bodyCam.findAndCountAll({
@@ -66,7 +66,7 @@ const deletebodyCam = async (id) => {
 };
 module.exports={
     newbody,
-    getbodycams,
+    getAllbodycams,
     getbodycam,
     updatebodyCam,
     deletebodyCam,  
