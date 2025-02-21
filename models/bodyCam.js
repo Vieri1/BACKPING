@@ -1,36 +1,40 @@
 const { DataTypes } = require("sequelize");
 module.exports=(sequelize)=>{
-    const Persona=sequelize.define('Persona',{
+    const bodyCam=sequelize.define('bodyCam',{
         id: {
             type: DataTypes.UUID,
             primaryKey: true,
             defaultValue: DataTypes.UUIDV4,
         },
-        DNI: {
+        numero:{
             type: DataTypes.STRING,
             allowNull: true
-         
+
         },
-        nombre:{
+        serie:{
             type: DataTypes.STRING,
+           
             allowNull: true
         },
-        ape_paterno:{
+
+        nro_bateria:{
             type: DataTypes.STRING,
+           
             allowNull:true
         },
-        ape_materno:{
-            type: DataTypes.STRING,
+        id_proveedor:{
+            type:DataTypes.INTEGER,
             allowNull:true
         },
         state:{
-            type: DataTypes.ENUM('CESADO','TRABAJANDO'),
+            type:DataTypes.BOOLEAN,
             allowNull:true
         }
+
     }, {
-        tableName: 'Personas',
+        tableName: 'bodyCams',
         timestamps: true
     });
 
-    return Persona;
+    return bodyCam;
 }
