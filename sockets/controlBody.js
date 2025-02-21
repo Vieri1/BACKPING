@@ -7,7 +7,7 @@ const {
     deleteControlBody,
 } = require('../controllers/controlBodyController');
 
-const socketHandlers = (socket) => {
+const socketHandlerscontrol = (socket) => {
     // Evento para obtener un solo ControlBody
     socket.on("getControlBody", async (data, callback) => {
         const { id } = data;
@@ -152,4 +152,5 @@ const socketHandlers = (socket) => {
     });
 };
 
-module.exports = socketHandlers;
+module.exports = socketHandlerscontrol
+;
