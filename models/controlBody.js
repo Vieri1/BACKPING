@@ -20,7 +20,7 @@ module.exports = (sequelize) => {
                 model: 'Personas',
                 key: 'id',
             },
-            unique:true,
+            
             allowNull: false
         },
         id_turno: {
@@ -68,10 +68,10 @@ module.exports = (sequelize) => {
         
         status:{
             type: DataTypes.ENUM('EN CAMPO','EN CECOM'),
-            references: {
-                model: 'Usuarios',
-                key: 'id',
-            },
+            // references: {
+            //     model: 'Usuarios',
+            //     key: 'id',
+            // },
             allowNull: false
         },
     }, {

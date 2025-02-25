@@ -6,9 +6,16 @@ const {
     updateControlBody,
     deleteControlBody,
 } = require('../controllers/controlBodyController');
-
+const{
+    getBodyCamByName
+}=require("../controllers/bodyCamController")
+const{
+    newPersona
+}=require("../controllers/personaController")
 const socketHandlerscontrol = (socket) => {
-    // Evento para obtener un solo ControlBody
+
+    console.log("socketHandlers ejecutándose en:", socket.id);
+
     socket.on("getControlBody", async (data, callback) => {
         const { id } = data;
 
@@ -110,25 +117,45 @@ const socketHandlerscontrol = (socket) => {
 
     // Evento para crear un nuevo ControlBody
     socket.on('createControlBody', async (data, callback) => {
-        const { id_Body, id_dni, id_turno, id_jurisdiccion, id_unidad, fecha_entrega, hora_entrega, fecha_devolucion, hora_devolucion, status } = data;
+        console.log("esta es la data de fluitter:",data);
+        
+        const { Bodycam, nombre, ape_paterno,ape_materno, dni, id_unidad, fecha_entrega, hora_entrega, fecha_devolucion, hora_devolucion, status } = data;
 
-        const errores = [];
+        // const errores = [];
+        // let id_body;
+        // let id_persona;
+        // if (Bodycam){
+        //     const response=await getBodyCamByName(Bodycam)
+        //     if(response){
+        //         console.log(response);
+        //         const id_body=Bodycam.id;
+        //         console.log(id_body);
+                
+        //     }else{
+        //         errores.push("La bodycam no se encuentra en la DB")
+        //     }
+        // }
+        // if(nombre && ape_apellido && ape_materno && dni){
+        //     const persona=await newPersona({dni,nombre,ape_materno,ape_materno})
+        //     if(persona){
+                
+        //     }
+        // }
+        // if (!id_dni) errores.push("El campo id_dni es requerido");
+        // if (!id_turno) errores.push("El campo id_turno es requerido");
+        // if (!id_jurisdiccion) errores.push("El campo id_jurisdiccion es requerido");
+        // if (!id_unidad) errores.push("El campo id_unidad es requerido");
+        // if (!fecha_entrega) errores.push("El campo fecha_entrega es requerido");
+        // if (!hora_entrega) errores.push("El campo hora_entrega es requerido");
+        // if (!fecha_devolucion) errores.push("El campo fecha_devolucion es requerido");
+        // if (!hora_devolucion) errores.push("El campo hora_devolucion es requerido");
 
-        if (!id_Body) errores.push("El campo id_Body es requerido");
-        if (!id_dni) errores.push("El campo id_dni es requerido");
-        if (!id_turno) errores.push("El campo id_turno es requerido");
-        if (!id_jurisdiccion) errores.push("El campo id_jurisdiccion es requerido");
-        if (!id_unidad) errores.push("El campo id_unidad es requerido");
-        if (!fecha_entrega) errores.push("El campo fecha_entrega es requerido");
-        if (!hora_entrega) errores.push("El campo hora_entrega es requerido");
-        if (!fecha_devolucion) errores.push("El campo fecha_devolucion es requerido");
-        if (!hora_devolucion) errores.push("El campo hora_devolucion es requerido");
-
-        if (errores.length > 0) {
-            return callback({ status: 400, errores });
-        }
+        // if (errores.length > 0) {
+        //     return callback({ status: 400, errores });
+        // }
 
         try {
+            const 
             const response = await newControlBody({ id_Body, id_dni, id_turno, id_jurisdiccion, id_unidad, fecha_entrega, hora_entrega, fecha_devolucion, hora_devolucion, status });
 
             if (!response) {
@@ -152,5 +179,5 @@ const socketHandlerscontrol = (socket) => {
     });
 };
 
-module.exports = socketHandlerscontrol
-;
+module.exports = {socketHandlerscontrol}
+

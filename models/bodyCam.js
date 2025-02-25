@@ -4,7 +4,7 @@ module.exports=(sequelize)=>{
         id: {
             type: DataTypes.UUID,
             primaryKey: true,
-            defaultValue: DataTypes.UUIDV4,
+            defaultValue:    DataTypes.UUIDV4,
         },
         numero:{
             type: DataTypes.STRING,
@@ -23,8 +23,13 @@ module.exports=(sequelize)=>{
             allowNull:true
         },
         id_proveedor:{
-            type:DataTypes.INTEGER,
-            allowNull:true
+            type:DataTypes.UUID,
+            references: {
+                        model: 'proveedors',
+                        key: 'id',
+                    },
+                    allowNull: false
+            
         },
         state:{
             type:DataTypes.BOOLEAN,
@@ -35,6 +40,9 @@ module.exports=(sequelize)=>{
         tableName: 'bodyCams',
         timestamps: true
     });
+    bodyCam.associate = (db) => {  
+        bodyCam.belongsTo(db.proveedor, { foreignKey: 'id_proveedor', as: 'proveedors' });
+};
 
     return bodyCam;
 }
