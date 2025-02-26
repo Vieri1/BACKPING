@@ -118,45 +118,41 @@ const socketHandlerscontrol = (socket) => {
     // Evento para crear un nuevo ControlBody
     socket.on('createControlBody', async (data, callback) => {
         console.log("esta es la data de fluitter:",data);
-        
-        const { Bodycam, nombre, ape_paterno,ape_materno, dni, id_unidad, fecha_entrega, hora_entrega, fecha_devolucion, hora_devolucion, status } = data;
-
-        // const errores = [];
-        // let id_body;
-        // let id_persona;
-        // if (Bodycam){
-        //     const response=await getBodyCamByName(Bodycam)
-        //     if(response){
-        //         console.log(response);
-        //         const id_body=Bodycam.id;
-        //         console.log(id_body);
-                
-        //     }else{
-        //         errores.push("La bodycam no se encuentra en la DB")
-        //     }
-        // }
-        // if(nombre && ape_apellido && ape_materno && dni){
-        //     const persona=await newPersona({dni,nombre,ape_materno,ape_materno})
-        //     if(persona){
-                
-        //     }
-        // }
-        // if (!id_dni) errores.push("El campo id_dni es requerido");
-        // if (!id_turno) errores.push("El campo id_turno es requerido");
-        // if (!id_jurisdiccion) errores.push("El campo id_jurisdiccion es requerido");
-        // if (!id_unidad) errores.push("El campo id_unidad es requerido");
-        // if (!fecha_entrega) errores.push("El campo fecha_entrega es requerido");
-        // if (!hora_entrega) errores.push("El campo hora_entrega es requerido");
-        // if (!fecha_devolucion) errores.push("El campo fecha_devolucion es requerido");
-        // if (!hora_devolucion) errores.push("El campo hora_devolucion es requerido");
-
-        // if (errores.length > 0) {
-        //     return callback({ status: 400, errores });
-        // }
-
         try {
-            const 
-            const response = await newControlBody({ id_Body, id_dni, id_turno, id_jurisdiccion, id_unidad, fecha_entrega, hora_entrega, fecha_devolucion, hora_devolucion, status });
+            const errores=[];
+            const regex= /^[a-zA-Z0-9\s]+$/;
+            const { Bodycam, nombre, ape_paterno,ape_materno, dni, jurisdiccion, fecha_entrega, hora_entrega} = data;
+            if(typeof Bodycam!=="string")
+             errores.push("EL nombre de la bodycam debe ser un string")
+            if(Bodycam.length>0)
+                errores.push("La bodycam debe tener texto")
+            if(regex.test(Bodycam))
+                errores.push("el nombre no debe tener caracteres especiales")
+            if(typeof nombre!=="string")
+                errores.push("EL nombre de la nombre debe ser un string")
+            if(nombre.length>0)
+                   errores.push("La nombre debe tener texto")
+            if(regex.test(nombre))
+                   errores.push("el nombre no debe tener caracteres especiales")           
+            if(typeof ape_paterno!=="string")
+                errores.push("EL nombre de la ape_paterno debe ser un string")
+            if(ape_paterno.length>0)
+                   errores.push("La ape_paterno debe tener texto")
+            if(regex.test(ape_paterno))
+                   errores.push("el nombre no debe tener caracteres especiales")
+            if(typeof ape_materno!=="string")
+                errores.push("EL nombre de la ape_materno debe ser un string")
+            if(ape_materno.length>0)
+                   errores.push("La ape_materno debe tener texto")
+            if(regex.test(ape_materno))
+                   errores.push("el nombre no debe tener caracteres especiales")
+
+            if(errores>0){
+                return callback({status:400,message:"Estos son los errores"});
+            }
+            const id_Body=getBodyCamByName(Bodycam)
+
+            const response = await newControlBody({ id_Body, id_dni, id_turno, id_jurisdiccion, id_unidad, fecha_entrega, hora_entrega });
 
             if (!response) {
                 return callback({ status: 500, message: "Error al registrar el ControlBody." });
