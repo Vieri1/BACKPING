@@ -25,12 +25,12 @@ const getHorarios = async (page = 1, limit = 20) => {
     }
 };
 
-const getHorario = async (id) => {
+const getHorario = async (turno) => {
     try {
-        const response = await horario.findOne({ where: { id } });
+        const response = await horario.findOne({ where: { turno } });
         return response || null;
     } catch (error) {
-        console.error("Error al obtener horario:", error);
+        console.error("Error al obtener turno:", error);
         return false;
     }
 };

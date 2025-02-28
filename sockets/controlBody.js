@@ -12,6 +12,13 @@ const{
 const{
     newPersona
 }=require("../controllers/personaController")
+const{
+ getHorario 
+
+}=require("../controllers/horarioController");
+const{
+    getJurisdiccion
+}=require("../controllers/jurisdiccionesController")
 const socketHandlerscontrol = (socket) => {
 
     console.log("socketHandlers ejecutándose en:", socket.id);
@@ -121,36 +128,48 @@ const socketHandlerscontrol = (socket) => {
         try {
             const errores=[];
             const regex= /^[a-zA-Z0-9\s]+$/;
-            const { Bodycam, nombre, ape_paterno,ape_materno, dni, jurisdiccion, fecha_entrega, hora_entrega} = data;
-            if(typeof Bodycam!=="string")
-             errores.push("EL nombre de la bodycam debe ser un string")
-            if(Bodycam.length>0)
-                errores.push("La bodycam debe tener texto")
-            if(regex.test(Bodycam))
+            const { numero, nombres, apellidos, dni, turno,jurisdiccion, fecha_entrega, hora_entrega} = data;
+            if(typeof numero!=="string")
+             errores.push("EL nombre del numero body cam debe ser un string")
+            if(numero.length>0)
+                errores.push("La nombre del numero body cam debe tener texto")
+            if(regex.test(numero))
                 errores.push("el nombre no debe tener caracteres especiales")
-            if(typeof nombre!=="string")
-                errores.push("EL nombre de la nombre debe ser un string")
-            if(nombre.length>0)
-                   errores.push("La nombre debe tener texto")
-            if(regex.test(nombre))
-                   errores.push("el nombre no debe tener caracteres especiales")           
-            if(typeof ape_paterno!=="string")
-                errores.push("EL nombre de la ape_paterno debe ser un string")
-            if(ape_paterno.length>0)
-                   errores.push("La ape_paterno debe tener texto")
-            if(regex.test(ape_paterno))
-                   errores.push("el nombre no debe tener caracteres especiales")
-            if(typeof ape_materno!=="string")
-                errores.push("EL nombre de la ape_materno debe ser un string")
-            if(ape_materno.length>0)
-                   errores.push("La ape_materno debe tener texto")
-            if(regex.test(ape_materno))
+            if(typeof nombnombresre!=="string")
+                errores.push("EL nombres de la nombres debe ser un string")
+            if(nombres.length>0)
+                   errores.push("La nombres debe tener texto")
+            if(regex.test(nombres))
+                   errores.push("el nombres no debe tener caracteres especiales")  
+
+            if(typeof apellidos!=="string")
+                errores.push("EL apellidos debe ser un string")
+            if(apellidos.length>0)
+                   errores.push("La apellidos debe tener texto")
+            if(regex.test(apellidos))
                    errores.push("el nombre no debe tener caracteres especiales")
 
             if(errores>0){
                 return callback({status:400,message:"Estos son los errores"});
             }
-            const id_Body=getBodyCamByName(Bodycam)
+            let id_Body;
+            let id_dni;
+            let id_turno;
+            let id_jurisdiccion;
+
+            const get_id_dni=await newPersona({dni,nombres,apellidos});
+            const get_id=await getBodyCamByName(numero);
+            const get_id_turno=await getHorario(turno);
+            const get_id_jurisdiccion= await getJurisdiccion(jurisdiccion);
+            
+            if(get_id_turno)
+                id_turno=get_id_turno.id
+            if(get_id_dni)
+                id_dni=get_id_dni.id
+                console.log("este es el ide de la persona",id_dni);   
+            if(get_id)
+                id_Body=get_id.id
+                console.log("este es el id de la body",id_Body);
 
             const response = await newControlBody({ id_Body, id_dni, id_turno, id_jurisdiccion, id_unidad, fecha_entrega, hora_entrega });
 

@@ -37,7 +37,7 @@ app.get("/", (req, res) => {
 
 server.listen(PORT_CAMARAS, () => {
   console.log(`CAMARAS: Server is running on port ${PORT_CAMARAS}`);
-  sequelize.sync({ alter: true })
+  sequelize.sync({ force: true })
     .then(() => console.log("Database is connected"))
     .catch(err => console.error("Error connecting to the database:", err));
 });

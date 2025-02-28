@@ -25,9 +25,9 @@ const getJurisdicciones = async (page = 1, limit = 20) => {
     }
 };
 
-const getJurisdiccion = async (id) => {
+const getJurisdiccion = async (jurisdiccion) => {
     try {
-        const response = await Jurisdiccion.findOne({ where: { id } });
+        const response = await Jurisdiccion.findOne({ where: { jurisdiccion } });
         return response || null;
     } catch (error) {
         console.error("Error al obtener jurisdicción:", error);

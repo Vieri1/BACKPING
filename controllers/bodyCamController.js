@@ -34,9 +34,9 @@ const getbodycam=async (id) => {
         return false;
     }
 };
-const getBodyCamByName = async (nombre) => {
+const getBodyCamByName = async (numero) => {
     try {
-        const response = await bodyCam.findOne({ where: { nombre } });
+        const response = await bodyCam.findOne({ where: { numero } });
         return response || null;
     } catch (error) {
         console.error({ message: "Error en el controlador al buscar la bodycam por nombre", data: error });

@@ -11,18 +11,15 @@ module.exports=(sequelize)=>{
             allowNull: true
          
         },
-        nombre:{
+        nombres:{
             type: DataTypes.STRING,
             allowNull: true
         },
-        ape_paterno:{
+        apellios:{
             type: DataTypes.STRING,
             allowNull:true
         },
-        ape_materno:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
+
 
     }, {
         tableName: 'Personas',
