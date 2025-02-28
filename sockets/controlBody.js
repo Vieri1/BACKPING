@@ -6,9 +6,23 @@ const {
     updateControlBody,
     deleteControlBody,
 } = require('../controllers/controlBodyController');
+const{
+    getBodyCamByName
+}=require("../controllers/bodyCamController")
+const{
+    newPersona
+}=require("../controllers/personaController")
+const{
+ getHorario 
 
+}=require("../controllers/horarioController");
+const{
+    getJurisdiccion
+}=require("../controllers/jurisdiccionesController")
 const socketHandlerscontrol = (socket) => {
-    // Evento para obtener un solo ControlBody
+
+    console.log("socketHandlers ejecutándose en:", socket.id);
+
     socket.on("getControlBody", async (data, callback) => {
         const { id } = data;
 
@@ -110,26 +124,54 @@ const socketHandlerscontrol = (socket) => {
 
     // Evento para crear un nuevo ControlBody
     socket.on('createControlBody', async (data, callback) => {
-        const { id_Body, id_dni, id_turno, id_jurisdiccion, id_unidad, fecha_entrega, hora_entrega, fecha_devolucion, hora_devolucion, status } = data;
-
-        const errores = [];
-
-        if (!id_Body) errores.push("El campo id_Body es requerido");
-        if (!id_dni) errores.push("El campo id_dni es requerido");
-        if (!id_turno) errores.push("El campo id_turno es requerido");
-        if (!id_jurisdiccion) errores.push("El campo id_jurisdiccion es requerido");
-        if (!id_unidad) errores.push("El campo id_unidad es requerido");
-        if (!fecha_entrega) errores.push("El campo fecha_entrega es requerido");
-        if (!hora_entrega) errores.push("El campo hora_entrega es requerido");
-        if (!fecha_devolucion) errores.push("El campo fecha_devolucion es requerido");
-        if (!hora_devolucion) errores.push("El campo hora_devolucion es requerido");
-
-        if (errores.length > 0) {
-            return callback({ status: 400, errores });
-        }
-
+        console.log("esta es la data de fluitter:",data);
         try {
-            const response = await newControlBody({ id_Body, id_dni, id_turno, id_jurisdiccion, id_unidad, fecha_entrega, hora_entrega, fecha_devolucion, hora_devolucion, status });
+            const errores=[];
+            const regex= /^[a-zA-Z0-9\s]+$/;
+            const { numero, nombres, apellidos, dni, turno,jurisdiccion, fecha_entrega, hora_entrega} = data;
+            if(typeof numero!=="string")
+             errores.push("EL nombre del numero body cam debe ser un string")
+            if(numero.length>0)
+                errores.push("La nombre del numero body cam debe tener texto")
+            if(regex.test(numero))
+                errores.push("el nombre no debe tener caracteres especiales")
+            if(typeof nombnombresre!=="string")
+                errores.push("EL nombres de la nombres debe ser un string")
+            if(nombres.length>0)
+                   errores.push("La nombres debe tener texto")
+            if(regex.test(nombres))
+                   errores.push("el nombres no debe tener caracteres especiales")  
+
+            if(typeof apellidos!=="string")
+                errores.push("EL apellidos debe ser un string")
+            if(apellidos.length>0)
+                   errores.push("La apellidos debe tener texto")
+            if(regex.test(apellidos))
+                   errores.push("el nombre no debe tener caracteres especiales")
+
+            if(errores>0){
+                return callback({status:400,message:"Estos son los errores"});
+            }
+            let id_Body;
+            let id_dni;
+            let id_turno;
+            let id_jurisdiccion;
+
+            const get_id_dni=await newPersona({dni,nombres,apellidos});
+            const get_id=await getBodyCamByName(numero);
+            const get_id_turno=await getHorario(turno);
+            const get_id_jurisdiccion= await getJurisdiccion(jurisdiccion);
+            
+            if(get_id_turno)
+                id_turno=get_id_turno.id
+            if(get_id_dni)
+                id_dni=get_id_dni.id
+                console.log("este es el ide de la persona",id_dni);   
+            if(get_id)
+                id_Body=get_id.id
+                console.log("este es el id de la body",id_Body);
+
+            const response = await newControlBody({ id_Body, id_dni, id_turno, id_jurisdiccion, id_unidad, fecha_entrega, hora_entrega });
 
             if (!response) {
                 return callback({ status: 500, message: "Error al registrar el ControlBody." });
@@ -152,5 +194,5 @@ const socketHandlerscontrol = (socket) => {
     });
 };
 
-module.exports = socketHandlerscontrol
-;
+module.exports = {socketHandlerscontrol}
+

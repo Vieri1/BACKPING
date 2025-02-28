@@ -6,10 +6,18 @@ module.exports=(sequelize)=>{
             primaryKey: true,
             defaultValue: DataTypes.UUIDV4,
         },
-        nombre:{
-            type: DataTypes.STRING,
+        transporte:{
+            type:DataTypes.STRING,
+            allowNull:true
+        },
+        numero:{
+            type: DataTypes.INTEGER,
             allowNull: true
         },
+        placa:{
+            type:DataTypes.STRING,
+            allowNull:true
+        }
         
     }, {
         tableName: 'Unidads',

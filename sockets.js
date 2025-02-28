@@ -1,7 +1,7 @@
 
 const socketIo = require("socket.io");
-const {socketHandlers}=require("./sockets/reguistrobody")
-const {socketHandlerscontrol}=require("./sockets/controlBody")
+const {socketHandlers}=require("./sockets/reguistrobody");
+const {socketHandlerscontrol}=require("./sockets/controlBody");
 
 
 // Mapa para almacenar los sockets de los usuarios
@@ -22,14 +22,11 @@ function initializeSocket(server) {
             console.log("registro:", userName);
             userSockets.set(userName, socket); // Asocia el ID de usuario con el socket
         });
-        socket.on("mensaje", (mensaje) => {
-            console.log("mensaje:", mensaje);
-            // Asocia el ID de usuario con el socket
-        });
+       
         // Evento para manejar movimientos
         socketHandlers(socket);
         socketHandlerscontrol(socket);
-
+        
         // Desconexión: eliminamos el socket del mapa
         socket.on("disconnect", () => {
             userSockets.forEach((value, key) => {

@@ -147,4 +147,4 @@ const socketHandlers = (socket) => {
     });
 };
 
-module.exports = socketHandlers;
+module.exports = {socketHandlers};

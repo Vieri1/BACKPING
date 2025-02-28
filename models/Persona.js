@@ -6,27 +6,21 @@ module.exports=(sequelize)=>{
             primaryKey: true,
             defaultValue: DataTypes.UUIDV4,
         },
-        DNI: {
+        dni: {
             type: DataTypes.STRING,
             allowNull: true
          
         },
-        nombre:{
+        nombres:{
             type: DataTypes.STRING,
             allowNull: true
         },
-        ape_paterno:{
+        apellios:{
             type: DataTypes.STRING,
             allowNull:true
         },
-        ape_materno:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        state:{
-            type: DataTypes.ENUM('CESADO','TRABAJANDO'),
-            allowNull:true
-        }
+
+
     }, {
         tableName: 'Personas',
         timestamps: true

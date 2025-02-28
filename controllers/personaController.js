@@ -1,8 +1,8 @@
 const { Persona } = require('../db_connection');
 
-const newPersona = async ({ DNI, nombre, ape_paterno, ape_materno, state }) => {
+const newPersona = async ({ dni, nombres, apellidos }) => {
     try {
-        const response = await Persona.create({ DNI, nombre, ape_paterno, ape_materno, state });
+        const response = await Persona.create({ dni, nombres, apellidos});
         return response || null;
     } catch (error) {
         console.error("Error al crear persona:", error);
