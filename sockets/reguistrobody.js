@@ -142,9 +142,7 @@ const socketHandlers = (socket) => {
         }
     });
 
-    socket.on("disconnect", () => {
-        console.log(`Cliente desconectado: ${socket.id}`);
-    });
+ 
 };
 
 module.exports = {socketHandlers};

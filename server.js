@@ -17,7 +17,7 @@ const app = express();
 
 //app.use(bodyParser.json({ limit: '50mb' }));
 //app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
-//app.use(cors());
+app.use(cors());
 app.use(express.json());
 //app.use("/login", usuariosRouter); // no aplica authMiddleware para el manejo de usuarios
 //app.use(loginMiddleware); // usa el middleware globalmente para validar todas las rutas a las que se va a acceder en el sistema solo estando logeado
@@ -37,7 +37,7 @@ app.get("/", (req, res) => {
 
 server.listen(PORT_CAMARAS, () => {
   console.log(`CAMARAS: Server is running on port ${PORT_CAMARAS}`);
-  sequelize.sync({ force: true })
+  sequelize.sync({ alter: true })
     .then(() => console.log("Database is connected"))
     .catch(err => console.error("Error connecting to the database:", err));
 });

@@ -25,9 +25,9 @@ const getUnidades = async (page = 1, limit = 20) => {
     }
 };
 
-const getUnidad = async (id) => {
+const getUnidad = async (unidad) => {
     try {
-        const response = await Unidad.findOne({ where: { id } });
+        const response = await Unidad.findOne({ where:{ numero:unidad} });
         return response || null;
     } catch (error) {
         console.error("Error al obtener unidad:", error);

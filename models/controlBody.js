@@ -47,7 +47,14 @@ module.exports = (sequelize) => {
             },         
             allowNull: false
         },
-        
+        id_funcion:{
+            type: DataTypes.UUID,
+            references: {
+                model: 'Funcions',
+                key: 'id',
+            },         
+            allowNull: false
+        },
         fecha_entrega:{
             type: DataTypes.DATEONLY,
             allowNull: true,
@@ -72,7 +79,7 @@ module.exports = (sequelize) => {
             //     model: 'Usuarios',
             //     key: 'id',
             // },
-            allowNull: false
+            allowNull: true
         },
     }, {
         tableName: 'controlBodys',
@@ -83,6 +90,7 @@ module.exports = (sequelize) => {
         controlBody.belongsTo(db.Persona, { foreignKey: 'id_dni', as: 'Personas' });
         controlBody.belongsTo(db.Unidad, { foreignKey: 'id_unidad', as: 'Unidads' });
         controlBody.belongsTo(db.horario, { foreignKey: 'id_turno', as: 'horarios' });
+        controlBody.belongsTo(db.Funcion, { foreignKey: 'id_funcion', as: 'funcions' });
         controlBody.belongsTo(db.Jurisdiccion,{foreignKey:'id_jurisdiccion',as:'Jurisdiccions'});
     };
 

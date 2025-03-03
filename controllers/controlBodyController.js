@@ -1,6 +1,6 @@
 const { controlBody } = require('../db_connection');
 
-const newControlBody = async ({ id_Body, id_dni, id_turno, id_jurisdiccion, id_unidad, fecha_entrega, hora_entrega, fecha_devolucion, hora_devolucion, status }) => {
+const newControlBody = async ({ id_Body, id_dni, id_turno, id_jurisdiccion, id_funcion,id_unidad, fecha_entrega, hora_entrega, fecha_devolucion, hora_devolucion, status }) => {
     try {
         const response = await controlBody.create({
             id_Body,
@@ -8,6 +8,7 @@ const newControlBody = async ({ id_Body, id_dni, id_turno, id_jurisdiccion, id_u
             id_turno,
             id_jurisdiccion,
             id_unidad,
+            id_funcion,
             fecha_entrega,
             hora_entrega,
             fecha_devolucion,

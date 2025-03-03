@@ -15,7 +15,7 @@ module.exports=(sequelize)=>{
             type: DataTypes.STRING,
             allowNull: true
         },
-        apellios:{
+        apellidos:{
             type: DataTypes.STRING,
             allowNull:true
         },
