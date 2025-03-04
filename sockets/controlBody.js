@@ -49,25 +49,6 @@ const socketHandlerscontrol = (socket) => {
         }
     });
 
-    // Evento para eliminar un ControlBody
-    socket.on("deleteControlBody", async (data, callback) => {
-        const { id } = data;
-        try {
-            const response = await deleteControlBody(id);
-
-            if (!response) {
-                return callback({ status: 500, message: "Error al eliminar el ControlBody." });
-            }
-            const io = getIo();
-            io.emit("changeStateControlBody", { message: "Se eliminó correctamente el ControlBody", data: response });
-
-            callback({ status: 200, message: "Se eliminó correctamente el ControlBody" });
-
-        } catch (error) {
-            console.error("Error en el controlador", error);
-            callback({ status: 500, message: "Error al eliminar el ControlBody" });
-        }
-    });
 
     // Evento para obtener todos los ControlBodys con paginación
     socket.on("getAllControlBodys", async (data, callback) => {
@@ -79,9 +60,8 @@ const socketHandlerscontrol = (socket) => {
 
         try {
             const response = await getControlBodys(Number(page), Number(limit));
-
-            const io = getIo();
-            io.emit("listaAllControlBodys", { message: 'ControlBodies obtenidos correctamente', data: response });
+            console.log("esta es la respuesta ", response);
+            
 
             callback({ status: 200, message: "ControlBodies obtenidos correctamente", data: response });
         } catch (error) {
@@ -91,115 +71,32 @@ const socketHandlerscontrol = (socket) => {
     });
 
     // Evento para actualizar un ControlBody
-    socket.on('updateControlBody', async (data, callback) => {
-        const { fecha_devolucion, hora_devolucion, status } = data;
+    // socket.on('updateControlBody', async (data, callback) => {
+    //     const { fecha_devolucion, hora_devolucion, status } = data;
 
-        const errores = [];
-        if (!fecha_devolucion) errores.push("El campo fecha_devolucion es requerido");
-        if (!hora_devolucion) errores.push("El campo hora_devolucion es requerido");
-        if (!status) errores.push("El campo status es requerido");
+    //     const errores = [];
+    //     if (!fecha_devolucion) errores.push("El campo fecha_devolucion es requerido");
+    //     if (!hora_devolucion) errores.push("El campo hora_devolucion es requerido");
+    //     if (!status) errores.push("El campo status es requerido");
 
-        if (errores.length > 0) {
-            return callback({ status: 400, errores });
-        }
+    //     if (errores.length > 0) {
+    //         return callback({ status: 400, errores });
+    //     }
 
-        try {
-            const response = await updateControlBody(id, {fecha_devolucion, hora_devolucion, status });
-
-            if (!response) {
-                return callback({ status: 500, message: "Error al modificar el ControlBody." });
-            }
-
-            // Emitir evento a todos los clientes
-            // const io = getIo();
-            // io.emit("controlBodyActualizado", { message: "ControlBody actualizado con éxito", data: response });
-
-            callback({ status: 200, message: "ControlBody actualizado con éxito", data: response });
-        } catch (error) {
-            console.error("Error al modificar ControlBody:", error);
-            callback({ status: 500, message: "Error interno del servidor" });
-        }
-    });
-
-    // Evento para crear un nuevo ControlBody
-    // socket.on('createControlBody', async (data, callback) => {
-    //     console.log("esta es la data de fluitter:",data);
     //     try {
-    //         const errores=[];
-    //         const regex= /^[a-zA-Z0-9\s]+$/;
-    //         const { numero, nombres, apellidos, dni, turno,jurisdiccion, fecha_entrega,funcion,unidad, hora_entrega} = data;
-    //         if(typeof numero!=="string")
-    //          errores.push("EL nombre del numero body cam debe ser un string")
-    //         if(numero.length>0)
-    //             errores.push("La nombre del numero body cam debe tener texto")
-    //         if(regex.test(numero))
-    //             errores.push("el nombre no debe tener caracteres especiales")
-    //         if(typeof nombnombresre!=="string")
-    //             errores.push("EL nombres de la nombres debe ser un string")
-    //         if(nombres.length>0)
-    //                errores.push("La nombres debe tener texto")
-    //         if(regex.test(nombres))
-    //                errores.push("el nombres no debe tener caracteres especiales")  
-
-    //         if(typeof apellidos!=="string")
-    //             errores.push("EL apellidos debe ser un string")
-    //         if(apellidos.length>0)
-    //                errores.push("La apellidos debe tener texto")
-    //         if(regex.test(apellidos))
-    //                errores.push("el nombre no debe tener caracteres especiales")
-
-    //         if(errores>0){
-    //             return callback({status:400,message:"Estos son los errores"});
-    //         }
-    //         let id_Body;
-    //         let id_dni;
-    //         let id_turno;
-    //         let id_jurisdiccion;
-    //         let id_funcion;
-    //         let id_unidad;
-
-    //         const get_id_dni=await newPersona({dni,nombres,apellidos});
-    //         const get_id=await getBodyCamByName(numero);
-    //         const get_id_turno=await getHorario(turno);
-    //         const get_id_jurisdiccion= await getJurisdiccion(jurisdiccion);
-    //         const get_id_funcion=await newfuncion({funcion});
-    //         console.log("la  funcion",get_id_funcion);
-            
-    //         const get_id_unidad=await getUnidad(unidad);
-    //         console.log("este la unidad",get_id_unidad);
-    //         if(get_id_unidad)
-    //             id_unidad=get_id_unidad.id
-    //         console.log("este el id unidad",id_unidad);
-    //         if(get_id_funcion)
-    //             id_funcion=get_id_funcion.id
-
-    //         console.log("este el id funcion",id_funcion);
-    //         if(get_id_turno)
-    //             id_turno=get_id_turno.id
-    //         console.log("este el id turno",id_turno);
-    //         if(get_id_dni)
-    //             id_dni=get_id_dni.id
-    //             console.log("este es el ide de la persona",id_dni);   
-    //         if(get_id)
-    //             id_Body=get_id.id
-    //             console.log("este es el id de la body",id_Body);
-    //         if(get_id_jurisdiccion){
-    //             id_jurisdiccion=get_id_jurisdiccion.id
-    //         }
-
-    //     const response = await newControlBody({ id_Body, id_dni, id_turno, id_jurisdiccion, id_unidad, id_funcion,fecha_entrega, hora_entrega });
+    //         const response = await updateControlBody(id, {fecha_devolucion, hora_devolucion, status });
 
     //         if (!response) {
-    //             return callback({ status: 500, message: "Error al registrar el ControlBody." });
+    //             return callback({ status: 500, message: "Error al modificar el ControlBody." });
     //         }
 
     //         // Emitir evento a todos los clientes
     //         // const io = getIo();
-    //         // io.emit("controlBodyRegistrado", { message: "ControlBody registrado con éxito", data: response });
+    //         // io.emit("controlBodyActualizado", { message: "ControlBody actualizado con éxito", data: response });
 
-    //         callback({ status: 200, message: "ControlBody registrado con éxito", data: response });
+    //         callback({ status: 200, message: "ControlBody actualizado con éxito", data: response });
     //     } catch (error) {
-    //         console.error("Error al registrar ControlBody:", error);
+    //         console.error("Error al modificar ControlBody:", error);
     //         callback({ status: 500, message: "Error interno del servidor" });
     //     }
     // });
@@ -267,6 +164,10 @@ const socketHandlerscontrol = (socket) => {
     
             // Enviar respuesta de éxito
             callback({ status: 200, message: "ControlBody registrado con éxito", data: response });
+            console.log("DATA",response);
+
+            const io = getIo();
+            io.emit("nuevoControlBody", response); 
     
         } catch (error) {
             console.error("Error al registrar ControlBody:", error);
