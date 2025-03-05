@@ -1,4 +1,4 @@
-const { getIo } = require('../sockets');
+
 const {
     newControlBody,
     getControlBodys,
@@ -26,7 +26,7 @@ const{
 const{
 getUnidad
 }=require("../controllers/UnidadController");
-const socketHandlerscontrol = (socket) => {
+const socketHandlerscontrol = (socket,io) => {
 
     console.log("socketHandlers ejecutándose en:", socket.id);
 
@@ -61,8 +61,7 @@ const socketHandlerscontrol = (socket) => {
         try {
             const response = await getControlBodys(Number(page), Number(limit));
             console.log("esta es la respuesta ", response);
-            
-
+    
             callback({ status: 200, message: "ControlBodies obtenidos correctamente", data: response });
         } catch (error) {
             console.error("Error al obtener ControlBodies:", error);
@@ -70,60 +69,31 @@ const socketHandlerscontrol = (socket) => {
         }
     });
 
-    // Evento para actualizar un ControlBody
-    // socket.on('updateControlBody', async (data, callback) => {
-    //     const { fecha_devolucion, hora_devolucion, status } = data;
-
-    //     const errores = [];
-    //     if (!fecha_devolucion) errores.push("El campo fecha_devolucion es requerido");
-    //     if (!hora_devolucion) errores.push("El campo hora_devolucion es requerido");
-    //     if (!status) errores.push("El campo status es requerido");
-
-    //     if (errores.length > 0) {
-    //         return callback({ status: 400, errores });
-    //     }
-
-    //     try {
-    //         const response = await updateControlBody(id, {fecha_devolucion, hora_devolucion, status });
-
-    //         if (!response) {
-    //             return callback({ status: 500, message: "Error al modificar el ControlBody." });
-    //         }
-
-    //         // Emitir evento a todos los clientes
-    //         // const io = getIo();
-    //         // io.emit("controlBodyActualizado", { message: "ControlBody actualizado con éxito", data: response });
-
-    //         callback({ status: 200, message: "ControlBody actualizado con éxito", data: response });
-    //     } catch (error) {
-    //         console.error("Error al modificar ControlBody:", error);
-    //         callback({ status: 500, message: "Error interno del servidor" });
-    //     }
-    // });
     socket.on('createControlBody', async (data, callback) => {
         console.log("Esta es la data de Flutter:", data);
+        
         try {
             const errores = [];
-            const regex = /^[a-zA-Z0-9\s]+$/;
+            const regex = /^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚ\s]+$/;
             const { numero, nombres, apellidos, dni, turno, jurisdiccion, fecha_entrega, funcion, unidad, hora_entrega } = data;
-    
+            
             // Validaciones de entrada
             if (typeof numero !== "string") errores.push("El campo 'numero' debe ser un string.");
             if (!numero || numero.trim() === "") errores.push("El campo 'numero' no puede estar vacío.");
             if (!regex.test(numero)) errores.push("El campo 'numero' no debe contener caracteres especiales.");
-    
+            
             if (typeof nombres !== "string") errores.push("El campo 'nombres' debe ser un string.");
             if (!nombres || nombres.trim() === "") errores.push("El campo 'nombres' no puede estar vacío.");
             if (!regex.test(nombres)) errores.push("El campo 'nombres' no debe contener caracteres especiales.");
-    
+            
             if (typeof apellidos !== "string") errores.push("El campo 'apellidos' debe ser un string.");
             if (!apellidos || apellidos.trim() === "") errores.push("El campo 'apellidos' no puede estar vacío.");
             if (!regex.test(apellidos)) errores.push("El campo 'apellidos' no debe contener caracteres especiales.");
-    
+            
             if (errores.length > 0) {
                 return callback({ status: 400, message: "Errores en los datos de entrada", errores });
             }
-    
+            
             let id_Body, id_dni, id_turno, id_jurisdiccion, id_funcion, id_unidad;
     
             // Obtener IDs y manejar casos donde no existan en la DB
@@ -166,8 +136,10 @@ const socketHandlerscontrol = (socket) => {
             callback({ status: 200, message: "ControlBody registrado con éxito", data: response });
             console.log("DATA",response);
 
-            const io = getIo();
-            io.emit("nuevoControlBody", response); 
+            
+          // ✅ Aquí sí tiene sentido emitir updateControlBodys
+             io.emit("updateControlBodys", { status: 200, data: await getControlBodys(1, 20) });
+
     
         } catch (error) {
             console.error("Error al registrar ControlBody:", error);

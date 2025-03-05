@@ -1,7 +1,7 @@
-const { getIo } = require('../sockets');
+
 const { newbody, updatebodyCam, getAllbodycams, deletebodyCam, getbodycam } = require("../controllers/bodyCamController");
 
-const socketHandlers = (socket) => {
+const socketHandlers = (socket,io) => {
     socket.on("getBody", async (data, callback) => {
         const { id } = data
 

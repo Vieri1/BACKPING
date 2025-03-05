@@ -1,5 +1,10 @@
 const { controlBody } = require('../db_connection');
-
+const { bodyCam }=require('../db_connection')
+const { Persona } = require('../db_connection');
+const { horario } = require('../db_connection');
+const { Jurisdiccion } = require('../db_connection');
+const { Unidad } = require('../db_connection');
+const { Funcion } = require('../db_connection');
 const newControlBody = async ({ id_Body, id_dni, id_turno, id_jurisdiccion, id_funcion,id_unidad, fecha_entrega, hora_entrega, fecha_devolucion, hora_devolucion, status }) => {
     try {
         const response = await controlBody.create({
@@ -28,7 +33,15 @@ const getControlBodys = async (page = 1, limit = 20) => {
         const response = await controlBody.findAndCountAll({
             limit,
             offset,
-            order: [['id', 'ASC']]
+            attributes: { exclude: ['createdAt', 'updatedAt'    , 'id_Body', 'id_dni', 'id_turno', 'id_jurisdiccion', 'id_unidad', 'id_funcion'] },
+            include: [
+                { model: bodyCam, as: 'bodyCams', attributes: ['numero'] }, 
+                { model: Persona, as: 'Personas', attributes: ['nombres', 'apellidos'] }, 
+                { model: horario, as: 'horarios', attributes: ['turno'] }, 
+                { model: Jurisdiccion, as: 'Jurisdiccions', attributes: ['jurisdiccion'] }, 
+                { model: Unidad, as: 'Unidads', attributes: ['numero'] }, 
+                { model: Funcion, as: 'funcions', attributes: ['funcion'] } 
+            ]
         });
         return { totalCount: response.count, data: response.rows, currentPage: page } || null;
     } catch (error) {
