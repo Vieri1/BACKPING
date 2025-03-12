@@ -5,21 +5,10 @@ const { horario } = require('../db_connection');
 const { Jurisdiccion } = require('../db_connection');
 const { Unidad } = require('../db_connection');
 const { Funcion } = require('../db_connection');
-const newControlBody = async ({ id_Body, id_dni, id_turno, id_jurisdiccion, id_funcion,id_unidad, fecha_entrega, hora_entrega, fecha_devolucion, hora_devolucion, status }) => {
+
+const newControlBody = async (controlBodies) => {
     try {
-        const response = await controlBody.create({
-            id_Body,
-            id_dni,
-            id_turno,
-            id_jurisdiccion,
-            id_unidad,
-            id_funcion,
-            fecha_entrega,
-            hora_entrega,
-            fecha_devolucion,
-            hora_devolucion,
-            status
-        });
+        const response = await controlBody.bulkCreate(controlBodies);
         return response || null;
     } catch (error) {
         console.error("Error al crear controlBody:", error);
@@ -60,11 +49,13 @@ const getControlBody = async (id) => {
     }
 };
 
-const updateControlBody = async (id, updates) => {
+const updateControlBody = async (body, {fecha_devolucion,hora_devolucion,detalles}) => {
+ 
     try {
-        const response = await getControlBody(id);
-        if (response) await response.update(updates);
+        const response = await controlBody.findOne({ where: { id_Body: body.id } });    
+        if (response) await response.update({fecha_devolucion,hora_devolucion,detalles});
         return response || null;
+        
     } catch (error) {
         console.error("Error al actualizar controlBody:", error);
         return false;

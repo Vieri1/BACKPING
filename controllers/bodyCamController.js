@@ -1,4 +1,5 @@
 const{bodyCam}=require('../db_connection')
+const{proveedor}=require('../db_connection')
 
 const newbody=async ({numero,serie,nro_bateria,id_proveedor}) => {
     try {
@@ -11,13 +12,20 @@ const newbody=async ({numero,serie,nro_bateria,id_proveedor}) => {
     return false;
     }
 };
-const getAllbodycams=async (page = 1, limit = 20) => {
+const getAllbodycams = async (page = 1, limit = 20) => {
     const offset = (page - 1) * limit;
     try {
-        const response=await bodyCam.findAndCountAll({
+        const response = await bodyCam.findAndCountAll({
             limit,
             offset,
-            order: [['id', 'ASC']]
+            order: [['id', 'ASC']],
+            include: [
+                {
+                    model: proveedor,
+                    as: 'proveedors',  
+                    attributes: ['marca', 'modelo']
+                }
+            ]
         });
         return { totalCount: response.count, data: response.rows, currentPage: page } || null;
     } catch (error) {
@@ -35,8 +43,11 @@ const getbodycam=async (id) => {
     }
 };
 const getBodyCamByName = async (numero) => {
+    
     try {
         const response = await bodyCam.findOne({ where: { numero } });
+        
+        
         return response || null;
     } catch (error) {
         console.error({ message: "Error en el controlador al buscar la bodycam por nombre", data: error });

@@ -48,104 +48,143 @@ const socketHandlerscontrol = (socket,io) => {
             callback({ status: 500, message: "Error al obtener el ControlBody" });
         }
     });
+    socket.on("ActualizarControlBodys", async (data, callback) => {
+       
 
-
-    // Evento para obtener todos los ControlBodys con paginación
-    socket.on("getAllControlBodys", async (data, callback) => {
-        const { page = 1, limit = 20 } = data;
-
-        if (isNaN(page) || page <= 0 || isNaN(limit) || limit <= 0) {
-            return callback({ status: 400, message: "Page y limit deben ser números válidos" });
-        }
-
-        try {
-            const response = await getControlBodys(Number(page), Number(limit));
-            console.log("esta es la respuesta ", response);
+        const { numero, fecha_devolucion, hora_devolucion,detalles } = data; // Extraer `id`
     
-            callback({ status: 200, message: "ControlBodies obtenidos correctamente", data: response });
+       
+        try {
+            const body=await getBodyCamByName(numero);
+            
+            
+            if(!body){
+                return callback({ status: 404, message: "La bodycam no está registrada en la db"})
+            }
+            const response = await updateControlBody(body, { fecha_devolucion, hora_devolucion ,detalles});
+            if (!response ) {
+                return callback({ status: 404, message: "No se encontró la Bodycam" });
+            }
+            if (response) {
+                
+                
+                callback({ status: 200, message: "Bodycam actualizada", data: response });
+               // io.emit("bodycamActualizada", response); // Notificar a todos los clientes
+            } else {
+                callback({ status: 404, message: "No se encontró la Bodycam" });
+            }
         } catch (error) {
-            console.error("Error al obtener ControlBodies:", error);
-            callback({ status: 500, message: "Error interno del servidor" });
+            console.error("Error al actualizar controlBody:", error);
+            callback({ status: 500, message: "Error en el servidor" });
         }
     });
 
+    socket.on("getAllControlBodys", async (data) => {
+    
+        const { page=1, limit=20 } = data;
+    
+        if (isNaN(page) || page <= 0 || isNaN(limit) || limit <= 0) {
+            socket.emit("getAllControlBodysResponse", { status: 400, message: "Page y limit deben ser números válidos" });
+            return;
+        }
+    
+        try {
+            const response = await getControlBodys(Number(page), Number(limit));
+            socket.emit("getAllControlBodysResponse", { status: 200, message: "ControlBodies obtenidos correctamente", data: response });
+        } catch (error) {
+            console.error("❌ Error al obtener ControlBodies:", error);
+            socket.emit("getAllControlBodysResponse", { status: 500, message: "Error interno del servidor" });
+        }
+    });
+    
+    
+
     socket.on('createControlBody', async (data, callback) => {
-        console.log("Esta es la data de Flutter:", data);
-        
+        console.log("Esta es la data:", data);
+    
         try {
             const errores = [];
             const regex = /^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚ\s]+$/;
-            const { numero, nombres, apellidos, dni, turno, jurisdiccion, fecha_entrega, funcion, unidad, hora_entrega } = data;
-            
-            // Validaciones de entrada
-            if (typeof numero !== "string") errores.push("El campo 'numero' debe ser un string.");
-            if (!numero || numero.trim() === "") errores.push("El campo 'numero' no puede estar vacío.");
-            if (!regex.test(numero)) errores.push("El campo 'numero' no debe contener caracteres especiales.");
-            
-            if (typeof nombres !== "string") errores.push("El campo 'nombres' debe ser un string.");
-            if (!nombres || nombres.trim() === "") errores.push("El campo 'nombres' no puede estar vacío.");
+            const { numeros, nombres, apellidos, dni, turno, jurisdiccion, fecha_entrega, funcion, unidad, hora_entrega } = data;
+    
+            if (!Array.isArray(numeros) || numeros.length === 0) {
+                return callback({ status: 400, message: "Debe proporcionar un arreglo de números de BodyCam." });
+            }
+    
+            // Validaciones comunes
+            if (typeof nombres !== "string" || !nombres.trim()) errores.push("El campo 'nombres' no puede estar vacío.");
             if (!regex.test(nombres)) errores.push("El campo 'nombres' no debe contener caracteres especiales.");
-            
-            if (typeof apellidos !== "string") errores.push("El campo 'apellidos' debe ser un string.");
-            if (!apellidos || apellidos.trim() === "") errores.push("El campo 'apellidos' no puede estar vacío.");
+    
+            if (typeof apellidos !== "string" || !apellidos.trim()) errores.push("El campo 'apellidos' no puede estar vacío.");
             if (!regex.test(apellidos)) errores.push("El campo 'apellidos' no debe contener caracteres especiales.");
-            
+    
             if (errores.length > 0) {
                 return callback({ status: 400, message: "Errores en los datos de entrada", errores });
             }
-            
-            let id_Body, id_dni, id_turno, id_jurisdiccion, id_funcion, id_unidad;
     
-            // Obtener IDs y manejar casos donde no existan en la DB
+            // Obtener IDs comunes
             const get_id_dni = await newPersona({ dni, nombres, apellidos });
             if (!get_id_dni) return callback({ status: 404, message: "La persona con el DNI proporcionado no existe." });
-            id_dni = get_id_dni.id;
-    
-            const get_id = await getBodyCamByName(numero);
-            if (!get_id) return callback({ status: 404, message: "El número de Body Cam no existe en la base de datos." });
-            id_Body = get_id.id;
+            const id_dni = get_id_dni.id;
     
             const get_id_turno = await getHorario(turno);
             if (!get_id_turno) return callback({ status: 404, message: "El turno especificado no existe." });
-            id_turno = get_id_turno.id;
+            const id_turno = get_id_turno.id;
     
             const get_id_jurisdiccion = await getJurisdiccion(jurisdiccion);
             if (!get_id_jurisdiccion) return callback({ status: 404, message: "La jurisdicción especificada no existe." });
-            id_jurisdiccion = get_id_jurisdiccion.id;
+            const id_jurisdiccion = get_id_jurisdiccion.id;
     
             const get_id_funcion = await newfuncion({ funcion });
             if (!get_id_funcion) return callback({ status: 404, message: "La función especificada no existe." });
-            id_funcion = get_id_funcion.id;
+            const id_funcion = get_id_funcion.id;
     
             const get_id_unidad = await getUnidad(unidad);
             if (!get_id_unidad) return callback({ status: 404, message: "La unidad especificada no existe." });
-            id_unidad = get_id_unidad.id;
+            const id_unidad = get_id_unidad.id;
     
-            console.log("IDs obtenidos:", { id_Body, id_dni, id_turno, id_jurisdiccion, id_funcion, id_unidad });
+            console.log("IDs obtenidos:", { id_dni, id_turno, id_jurisdiccion, id_funcion, id_unidad });
     
-            // Creación del ControlBody
-            const response = await newControlBody({
-                id_Body, id_dni, id_turno, id_jurisdiccion, id_unidad, id_funcion, fecha_entrega, hora_entrega
-            });
+            // Crear múltiples registros en una sola consulta con bulkCreate
+            const controlBodies = [];
     
-            if (!response) {
-                return callback({ status: 500, message: "Error al registrar el ControlBody." });
+            for (const numero of numeros) {
+                const get_id = await getBodyCamByName(numero);
+                if (!get_id) {
+                    console.log(`El número de BodyCam ${numero} no existe.`);
+                    continue;
+                }
+                const id_Body = get_id.id;
+    
+                controlBodies.push({
+                    id_Body, id_dni, id_turno, id_jurisdiccion, id_unidad, id_funcion, fecha_entrega, hora_entrega
+                });
             }
     
-            // Enviar respuesta de éxito
-            callback({ status: 200, message: "ControlBody registrado con éxito", data: response });
-            console.log("DATA",response);
-
-            
-          // ✅ Aquí sí tiene sentido emitir updateControlBodys
-             io.emit("updateControlBodys", { status: 200, data: await getControlBodys(1, 20) });
-
+            if (controlBodies.length === 0) {
+                return callback({ status: 404, message: "Ninguna BodyCam válida encontrada en la base de datos." });
+            }
+    
+            // Insertar en bulk
+            const response = await newControlBody(controlBodies);
+    
+            if (!response) {
+                return callback({ status: 500, message: "Error al registrar los ControlBody." });
+            }
+    
+            // Respuesta de éxito
+            callback({ status: 200, message: "ControlBodys registrados con éxito", data: response });
+            console.log("DATA", response);
+    
+            // Emitir actualización
+            io.emit("ControlBodys", { status: 200, data: await getControlBodys(1, 20) });
     
         } catch (error) {
             console.error("Error al registrar ControlBody:", error);
             callback({ status: 500, message: "Error interno del servidor" });
         }
     });
+    
     
     
 };

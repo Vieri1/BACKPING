@@ -81,6 +81,10 @@ module.exports = (sequelize) => {
             // },
             allowNull: true
         },
+        detalles:{
+            type:DataTypes.TEXT,
+            allowNull: true
+        }
     }, {
         tableName: 'controlBodys',
         timestamps: true

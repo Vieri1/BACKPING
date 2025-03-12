@@ -11,7 +11,7 @@ const socketHandlers = (socket,io) => {
 
                 return callback({ status: 500, message: "Error al traer la Bodycam" })
 
-            const io = getIo();
+           
 
             io.emit("getbody", { message: "Se hiso la operacion correctamente la body", data: response })
 
@@ -32,7 +32,7 @@ const socketHandlers = (socket,io) => {
             if (!response) {
                 return callback({ status: 500, message: "Error al modificar la BodyCam." });
             }
-            const io = getIo();
+           
             io.emit("changeStateBody", { message: "Se elimino correctamente la body(state)", data: response })
 
             callback({ status: 200, message: "Se elimino correctamente la body(state)" })
@@ -44,8 +44,8 @@ const socketHandlers = (socket,io) => {
 
     })
     // console.log(`Cliente conectado: ${socket.id}`);
-    socket.on("getAllBodys", async (data, callback) => {
-        const { page = 1, limit = 20 } = data;
+    socket.on("getAllBodys", async (data) => {
+        const { page , limit } = data;
 
         if (isNaN(page) || page <= 0 || isNaN(limit) || limit <= 0) {
             return callback({ status: 400, message: "Page y limit deben ser números válidos" });
@@ -54,13 +54,10 @@ const socketHandlers = (socket,io) => {
         try {
             const response = await getAllbodycams(Number(page), Number(limit));
 
-            const io = getIo();
-            io.emit("listaallbodys", { message: 'Bodycams obtenidos correctamente', data: response });
-
-            callback({ status: 200, message: "Bodycams obtenidos correctamente", data: response });
+            io.emit("listaallbodys", {status: 200, message: 'Bodycams obtenidos correctamente', data: response });
         } catch (error) {
             console.error("Error al obtener NCs:", error);
-            callback({ status: 500, message: "Error interno del servidor" });
+            io.emit("listaallbodys", {status: 500, message: 'Bodycams obtenidos correctamente', data: response });  
         }
 
     })
@@ -93,7 +90,7 @@ const socketHandlers = (socket,io) => {
             }
 
             // Emitir evento a todos los clientes
-            const io = getIo();
+          
             io.emit("bodyCamActualizada", { message: "BodyCam modificada con éxito", data: response });
 
             callback({ status: 200, message: "BodyCam modificada con éxito", data: response });
@@ -132,7 +129,7 @@ const socketHandlers = (socket,io) => {
             }
 
             // Emitir evento a todos los clientes
-            const io = getIo();
+    
             io.emit("bodyCamRegistrada", { message: "BodyCam registrada con éxito", data: newBody });
 
             callback({ status: 200, message: "BodyCam registrada con éxito", data: newBody });
