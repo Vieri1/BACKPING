@@ -91,6 +91,8 @@ const socketHandlerscontrol = (socket,io) => {
         try {
             const response = await getControlBodys(Number(page), Number(limit));
             socket.emit("getAllControlBodysResponse", { status: 200, message: "ControlBodies obtenidos correctamente", data: response });
+            console.log("esta es mi respuesta",response);
+            
         } catch (error) {
             console.error("❌ Error al obtener ControlBodies:", error);
             socket.emit("getAllControlBodysResponse", { status: 500, message: "Error interno del servidor" });
@@ -99,7 +101,7 @@ const socketHandlerscontrol = (socket,io) => {
     
     
 
-    socket.on('createControlBody', async (data, callback) => {
+    socket.on('createControlBody', async (data) => {
         console.log("Esta es la data:", data);
     
         try {
@@ -108,7 +110,8 @@ const socketHandlerscontrol = (socket,io) => {
             const { numeros, nombres, apellidos, dni, turno, jurisdiccion, fecha_entrega, funcion, unidad, hora_entrega } = data;
     
             if (!Array.isArray(numeros) || numeros.length === 0) {
-                return callback({ status: 400, message: "Debe proporcionar un arreglo de números de BodyCam." });
+                io.emit("ControlBodys", { status: 400, message: "Debe proporcionar un arreglo de números de BodyCam." });
+                return;
             }
     
             // Validaciones comunes
@@ -119,28 +122,44 @@ const socketHandlerscontrol = (socket,io) => {
             if (!regex.test(apellidos)) errores.push("El campo 'apellidos' no debe contener caracteres especiales.");
     
             if (errores.length > 0) {
-                return callback({ status: 400, message: "Errores en los datos de entrada", errores });
+                io.emit("ControlBodys", { status: 400, message: "Errores en los datos de entrada", errores });
+                return;
             }
     
             // Obtener IDs comunes
             const get_id_dni = await newPersona({ dni, nombres, apellidos });
-            if (!get_id_dni) return callback({ status: 404, message: "La persona con el DNI proporcionado no existe." });
+            if (!get_id_dni) {
+                io.emit("ControlBodys", { status: 404, message: "La persona con el DNI proporcionado no existe." });
+                return;
+            }
             const id_dni = get_id_dni.id;
     
             const get_id_turno = await getHorario(turno);
-            if (!get_id_turno) return callback({ status: 404, message: "El turno especificado no existe." });
+            if (!get_id_turno) {
+                io.emit("ControlBodys", { status: 404, message: "El turno especificado no existe." });
+                return;
+            }
             const id_turno = get_id_turno.id;
     
             const get_id_jurisdiccion = await getJurisdiccion(jurisdiccion);
-            if (!get_id_jurisdiccion) return callback({ status: 404, message: "La jurisdicción especificada no existe." });
+            if (!get_id_jurisdiccion) {
+                io.emit("ControlBodys", { status: 404, message: "La jurisdicción especificada no existe." });
+                return;
+            }
             const id_jurisdiccion = get_id_jurisdiccion.id;
     
             const get_id_funcion = await newfuncion({ funcion });
-            if (!get_id_funcion) return callback({ status: 404, message: "La función especificada no existe." });
+            if (!get_id_funcion) {
+                io.emit("ControlBodys", { status: 404, message: "La función especificada no existe." });
+                return;
+            }
             const id_funcion = get_id_funcion.id;
     
             const get_id_unidad = await getUnidad(unidad);
-            if (!get_id_unidad) return callback({ status: 404, message: "La unidad especificada no existe." });
+            if (!get_id_unidad) {
+                io.emit("ControlBodys", { status: 404, message: "La unidad especificada no existe." });
+                return;
+            }
             const id_unidad = get_id_unidad.id;
     
             console.log("IDs obtenidos:", { id_dni, id_turno, id_jurisdiccion, id_funcion, id_unidad });
@@ -162,28 +181,30 @@ const socketHandlerscontrol = (socket,io) => {
             }
     
             if (controlBodies.length === 0) {
-                return callback({ status: 404, message: "Ninguna BodyCam válida encontrada en la base de datos." });
+                io.emit("ControlBodys", { status: 404, message: "Ninguna BodyCam válida encontrada en la base de datos." });
+                return;
             }
     
             // Insertar en bulk
             const response = await newControlBody(controlBodies);
     
             if (!response) {
-                return callback({ status: 500, message: "Error al registrar los ControlBody." });
+                io.emit("ControlBodys", { status: 500, message: "Error al registrar los ControlBody." });
+                return;
             }
+
+            console.log("ASI RESPONDE EL BACK",response);
+            
+
+            io.emit("ControlBodys", { status: 200 , message:"Reguistro completado correctamente", data:response });
     
-            // Respuesta de éxito
-            callback({ status: 200, message: "ControlBodys registrados con éxito", data: response });
-            console.log("DATA", response);
-    
-            // Emitir actualización
-            io.emit("ControlBodys", { status: 200, data: await getControlBodys(1, 20) });
     
         } catch (error) {
             console.error("Error al registrar ControlBody:", error);
-            callback({ status: 500, message: "Error interno del servidor" });
+            io.emit("ControlBodys", { status: 500, message: "Error interno del servidor" });
         }
     });
+    
     
     
     
