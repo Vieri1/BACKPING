@@ -110,7 +110,7 @@ const socketHandlerscontrol = (socket,io) => {
             const { numeros, nombres, apellidos, dni, turno, jurisdiccion, fecha_entrega, funcion, unidad, hora_entrega } = data;
     
             if (!Array.isArray(numeros) || numeros.length === 0) {
-                io.emit("ControlBodys", { status: 400, message: "Debe proporcionar un arreglo de números de BodyCam." });
+                socket.emit("ControlBodys", { status: 400, message: "Debe proporcionar un arreglo de números de BodyCam." });
                 return;
             }
     
@@ -122,42 +122,42 @@ const socketHandlerscontrol = (socket,io) => {
             if (!regex.test(apellidos)) errores.push("El campo 'apellidos' no debe contener caracteres especiales.");
     
             if (errores.length > 0) {
-                io.emit("ControlBodys", { status: 400, message: "Errores en los datos de entrada", errores });
+                socket.emit("ControlBodys", { status: 400, message: "Errores en los datos de entrada", errores });
                 return;
             }
     
             // Obtener IDs comunes
             const get_id_dni = await newPersona({ dni, nombres, apellidos });
             if (!get_id_dni) {
-                io.emit("ControlBodys", { status: 404, message: "La persona con el DNI proporcionado no existe." });
+                socket.emit("ControlBodys", { status: 404, message: "La persona con el DNI proporcionado no existe." });
                 return;
             }
             const id_dni = get_id_dni.id;
     
             const get_id_turno = await getHorario(turno);
             if (!get_id_turno) {
-                io.emit("ControlBodys", { status: 404, message: "El turno especificado no existe." });
+                socket.emit("ControlBodys", { status: 404, message: "El turno especificado no existe." });
                 return;
             }
             const id_turno = get_id_turno.id;
     
             const get_id_jurisdiccion = await getJurisdiccion(jurisdiccion);
             if (!get_id_jurisdiccion) {
-                io.emit("ControlBodys", { status: 404, message: "La jurisdicción especificada no existe." });
+                socket.emit("ControlBodys", { status: 404, message: "La jurisdicción especificada no existe." });
                 return;
             }
             const id_jurisdiccion = get_id_jurisdiccion.id;
     
             const get_id_funcion = await newfuncion({ funcion });
             if (!get_id_funcion) {
-                io.emit("ControlBodys", { status: 404, message: "La función especificada no existe." });
+                socket.emit("ControlBodys", { status: 404, message: "La función especificada no existe." });
                 return;
             }
             const id_funcion = get_id_funcion.id;
     
             const get_id_unidad = await getUnidad(unidad);
             if (!get_id_unidad) {
-                io.emit("ControlBodys", { status: 404, message: "La unidad especificada no existe." });
+                socket.emit("ControlBodys", { status: 404, message: "La unidad especificada no existe." });
                 return;
             }
             const id_unidad = get_id_unidad.id;
@@ -181,7 +181,7 @@ const socketHandlerscontrol = (socket,io) => {
             }
     
             if (controlBodies.length === 0) {
-                io.emit("ControlBodys", { status: 404, message: "Ninguna BodyCam válida encontrada en la base de datos." });
+                socket.emit("ControlBodys", { status: 404, message: "Ninguna BodyCam válida encontrada en la base de datos." });
                 return;
             }
     
@@ -189,7 +189,7 @@ const socketHandlerscontrol = (socket,io) => {
             const response = await newControlBody(controlBodies);
     
             if (!response) {
-                io.emit("ControlBodys", { status: 500, message: "Error al registrar los ControlBody." });
+                socket.emit("ControlBodys", { status: 500, message: "Error al registrar los ControlBody." });
                 return;
             }
 
@@ -201,7 +201,7 @@ const socketHandlerscontrol = (socket,io) => {
     
         } catch (error) {
             console.error("Error al registrar ControlBody:", error);
-            io.emit("ControlBodys", { status: 500, message: "Error interno del servidor" });
+            socket.emit("ControlBodys", { status: 500, message: "Error interno del servidor" });
         }
     });
     
